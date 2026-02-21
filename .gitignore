@@ -1,0 +1,58 @@
+# =========================
+# .NET Backend
+# =========================
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.csproj.user
+
+# =========================
+# Secrets - NEVER commit
+# =========================
+appsettings.Development.json
+appsettings.Production.json
+*.secrets.json
+secrets/
+.env
+.env.local
+.env.development
+.env.production
+
+# =========================
+# Angular Frontend
+# =========================
+node_modules/
+dist/
+.angular/
+.npm/
+
+# =========================
+# IDE & Editors
+# =========================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+Logs/
+
+# =========================
+# OS Generated
+# =========================
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# =========================
+# Build & Test
+# =========================
+coverage/
+TestResults/
+*.coverage
