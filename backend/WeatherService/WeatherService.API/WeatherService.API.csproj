@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\WeatherService.Infrastructure\WeatherService.Infrastructure.csproj" />
@@ -12,6 +12,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>653216a4-1a2f-40cb-9f58-fe11da6ba991</UserSecretsId>
   </PropertyGroup>
 
 </Project>

@@ -14,11 +14,10 @@ obj/
 appsettings.Development.json
 appsettings.Production.json
 *.secrets.json
-secrets/
 .env
-.env.local
-.env.development
-.env.production
+.env.*
+secrets.json
+
 
 # =========================
 # Angular Frontend
