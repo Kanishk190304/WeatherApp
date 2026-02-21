@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AuthenticationService.API/AuthenticationService.API.csproj" />
+  <Project Path="AuthenticationService.Application/AuthenticationService.Application.csproj" />
+  <Project Path="AuthenticationService.Domain/AuthenticationService.Domain.csproj" />
+  <Project Path="AuthenticationService.Infrastructure/AuthenticationService.Infrastructure.csproj" />
+</Solution>
