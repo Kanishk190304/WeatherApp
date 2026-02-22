@@ -1,12 +1,12 @@
 using System.Text;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using WeatherService.Application.Interfaces;
-using WeatherService.Domain.Interfaces;
-using WeatherService.Infrastructure.Caching;
-using WeatherService.Infrastructure.ExternalApis;
-using WeatherService.Infrastructure.Services;
+using WeatherService.API.Configuration;
+using WeatherService.Application.Mappings;
+using WeatherService.Infrastructure.DependencyInjection;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -33,32 +33,24 @@ try
     // Use Serilog
     builder.Host.UseSerilog();
 
+    // Configure Autofac as DI container
+    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+    builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+    {
+        containerBuilder.RegisterModule<WeatherServiceModule>();
+    });
+
     // Add controllers
     builder.Services.AddControllers();
 
     // Add HttpClient for external API calls
     builder.Services.AddHttpClient();
 
-    // Register Weather Provider Factory (Factory Pattern)
-    builder.Services.AddSingleton<IWeatherProviderFactory, WeatherProviderFactory>();
+    // Add AutoMapper
+    builder.Services.AddAutoMapper(typeof(WeatherMappingProfile));
 
-    // Register Weather Provider using Factory
-    builder.Services.AddScoped<IWeatherProvider>(sp =>
-    {
-        var factory = sp.GetRequiredService<IWeatherProviderFactory>();
-        return factory.CreateProvider("openweathermap");
-    });
-
-    // Register Redis Cache Service (Singleton Pattern)
-    builder.Services.AddSingleton<RedisCacheServiceFactory>();
-    builder.Services.AddSingleton<ICacheService>(sp =>
-    {
-        var factory = sp.GetRequiredService<RedisCacheServiceFactory>();
-        return factory.Create();
-    });
-
-    // Register Weather Service
-    builder.Services.AddScoped<IWeatherService, WeatherDataService>();
+    // Add ELMAH error logging
+    builder.Services.AddElmahLogging(builder.Configuration);
 
     // Configure JWT authentication
     var jwtSecret = builder.Configuration["Jwt:Secret"]!;
@@ -126,6 +118,9 @@ try
     });
 
     var app = builder.Build();
+
+    // Use ELMAH error logging
+    app.UseElmahLogging();
 
     // Add Serilog request logging
     app.UseSerilogRequestLogging(options =>

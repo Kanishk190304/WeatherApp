@@ -1,9 +1,10 @@
 using System.Text;
-using AuthenticationService.Application.Interfaces;
-using AuthenticationService.Domain.Interfaces;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using AuthenticationService.API.Configuration;
+using AuthenticationService.Application.Mappings;
 using AuthenticationService.Infrastructure.Data;
-using AuthenticationService.Infrastructure.Repositories;
-using AuthenticationService.Infrastructure.Services;
+using AuthenticationService.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -34,6 +35,13 @@ try
     // Use Serilog
     builder.Host.UseSerilog();
 
+    // Configure Autofac as DI container
+    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+    builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+    {
+        containerBuilder.RegisterModule<AuthenticationServiceModule>();
+    });
+
     // Add controllers
     builder.Services.AddControllers();
 
@@ -41,12 +49,11 @@ try
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    // Register services for dependency injection
-    builder.Services.AddScoped<IUserRepository, UserRepository>();
-    builder.Services.AddScoped<IUserAdoRepository, UserAdoRepository>();
-    builder.Services.AddScoped<IJwtService, JwtService>();
-    builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
-    builder.Services.AddScoped<IAuthService, AuthService>();
+    // Add AutoMapper
+    builder.Services.AddAutoMapper(typeof(AuthenticationMappingProfile));
+
+    // Add ELMAH error logging
+    builder.Services.AddElmahLogging(builder.Configuration);
 
     // Configure JWT authentication
     var jwtSecret = builder.Configuration["Jwt:Secret"]!;
@@ -89,6 +96,9 @@ try
     builder.Services.AddSwaggerGen();
 
     var app = builder.Build();
+
+    // Use ELMAH error logging
+    app.UseElmahLogging();
 
     // Add Serilog request logging
     app.UseSerilogRequestLogging(options =>

@@ -1,8 +1,9 @@
-using LoggingService.Application.Interfaces;
-using LoggingService.Domain.Interfaces;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using LoggingService.API.Configuration;
+using LoggingService.Application.Mappings;
 using LoggingService.Infrastructure.Data;
-using LoggingService.Infrastructure.Repositories;
-using LoggingService.Infrastructure.Services;
+using LoggingService.Infrastructure.DependencyInjection;
 using Serilog;
 
 // Configure Serilog
@@ -30,17 +31,24 @@ try
     // Use Serilog
     builder.Host.UseSerilog();
 
+    // Configure Autofac as DI container
+    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+    builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+    {
+        containerBuilder.RegisterModule<LoggingServiceModule>();
+    });
+
     // Add controllers
     builder.Services.AddControllers();
 
     // Register MongoDB context
     builder.Services.AddSingleton<MongoDbContext>();
 
-    // Register repository
-    builder.Services.AddScoped<ILogRepository, LogRepository>();
+    // Add AutoMapper
+    builder.Services.AddAutoMapper(typeof(LoggingMappingProfile));
 
-    // Register logging service
-    builder.Services.AddScoped<ILoggingService, LoggingServiceImpl>();
+    // Add ELMAH error logging
+    builder.Services.AddElmahLogging(builder.Configuration);
 
     // Add CORS for Angular frontend
     builder.Services.AddCors(options =>
@@ -59,6 +67,9 @@ try
     builder.Services.AddSwaggerGen();
 
     var app = builder.Build();
+
+    // Use ELMAH error logging
+    app.UseElmahLogging();
 
     // Add Serilog request logging
     app.UseSerilogRequestLogging(options =>
