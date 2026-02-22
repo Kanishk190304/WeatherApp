@@ -72,5 +72,36 @@ namespace AuthenticationService.API.Controllers
 
             return Ok(result);
         }
+
+        // POST: api/auth/google
+        [HttpPost("google")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthDto request)
+        {
+            if (string.IsNullOrEmpty(request.IdToken))
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Google ID token is required"
+                });
+            }
+
+            // Google login
+            var result = await _authService.GoogleLoginAsync(request);
+
+            if (!result.Success)
+            {
+                return Unauthorized(result);
+            }
+
+            return Ok(result);
+        }
+
+        // GET: api/auth/test
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return Ok(new { Message = "Auth Service is running", Timestamp = DateTime.UtcNow });
+        }
     }
 }

@@ -5,10 +5,11 @@ namespace AuthenticationService.Application.Interfaces
     // Contract for authentication operations
     public interface IAuthService
     {
-        // Register a new user
+        // Standard authentication
         Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request);
-
-        // Login existing user
         Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
+
+        // Federated authentication
+        Task<AuthResponseDto> GoogleLoginAsync(GoogleAuthDto request);
     }
 }
