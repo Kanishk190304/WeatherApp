@@ -97,6 +97,32 @@ namespace AuthenticationService.API.Controllers
             return Ok(result);
         }
 
+        // POST: api/auth/google-login (alias endpoint for frontend compatibility)
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLoginAlias([FromBody] GoogleLoginRequestDto request)
+        {
+            if (string.IsNullOrEmpty(request.Token))
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Google ID token is required"
+                });
+            }
+
+            var googleAuthDto = new GoogleAuthDto { IdToken = request.Token };
+
+            // Google login
+            var result = await _authService.GoogleLoginAsync(googleAuthDto);
+
+            if (!result.Success)
+            {
+                return Unauthorized(result);
+            }
+
+            return Ok(result);
+        }
+
         // GET: api/auth/test
         [HttpGet("test")]
         public IActionResult Test()

@@ -1,0 +1,68 @@
+<div style="padding: 20px; max-width: 600px; margin: 0 auto;">
+  <h2>Weather Search</h2>
+  
+  <div style="margin-bottom: 20px;">
+    <input 
+      type="text" 
+      [(ngModel)]="city" 
+      placeholder="Enter city name"
+      (keyup.enter)="searchWeather()"
+      style="width: 70%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+    />
+    <button 
+      (click)="searchWeather()" 
+      [disabled]="loading"
+      style="width: 25%; padding: 8px; margin-left: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"
+    >
+      {{ loading ? 'Searching...' : 'Search' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" style="color: red; padding: 10px; background: #ffe0e0; border-radius: 4px; margin-bottom: 15px;">
+    {{ error }}
+  </div>
+
+  <div *ngIf="weatherData" style="border: 1px solid #ddd; padding: 15px; border-radius: 4px;">
+    <h3>{{ weatherData.city }}</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Temperature:</strong></td>
+        <td style="padding: 8px; border: 1px solid #ddd;">{{ weatherData.temperature }}°C</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Humidity:</strong></td>
+        <td style="padding: 8px; border: 1px solid #ddd;">{{ weatherData.humidity }}%</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Description:</strong></td>
+        <td style="padding: 8px; border: 1px solid #ddd;">{{ weatherData.description }}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Coordinates:</strong></td>
+        <td style="padding: 8px; border: 1px solid #ddd;">{{ weatherData.latitude }}, {{ weatherData.longitude }}</td>
+      </tr>
+      <tr *ngIf="weatherData.fromCache">
+        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Source:</strong></td>
+        <td style="padding: 8px; border: 1px solid #ddd; color: green;">Cached</td>
+      </tr>
+    </table>
+    <button 
+      (click)="openMap()" 
+      style="margin-top: 15px; padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;"
+    >
+      View on OpenStreetMap
+    </button>
+
+    <!-- Embedded OpenStreetMap -->
+    <div style="margin-top: 20px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+      <iframe
+        width="100%"
+        height="400"
+        style="border: none;"
+        [src]="mapUrl"
+        allowfullscreen=""
+        loading="lazy"
+      ></iframe>
+    </div>
+  </div>
+</div>

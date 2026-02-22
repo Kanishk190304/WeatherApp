@@ -1,0 +1,15 @@
+<nav style="background: #333; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+  <div style="color: white; font-size: 18px; font-weight: bold;">Weather App</div>
+  <div style="display: flex; gap: 15px; align-items: center;">
+    <ng-container *ngIf="isAuthenticated">
+      <a routerLink="/home" style="color: white; text-decoration: none;">Home</a>
+      <a routerLink="/search" style="color: white; text-decoration: none;">Search</a>
+      <span style="color: white;">{{ currentUser?.email }}</span>
+      <button (click)="logout()" style="padding: 5px 10px; cursor: pointer;">Logout</button>
+    </ng-container>
+    <ng-container *ngIf="!isAuthenticated">
+      <a routerLink="/login" style="color: white; text-decoration: none;">Login</a>
+      <a routerLink="/register" style="color: white; text-decoration: none;">Register</a>
+    </ng-container>
+  </div>
+</nav>

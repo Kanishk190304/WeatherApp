@@ -50,6 +50,35 @@ namespace WeatherService.API.Controllers
             return Ok(result);
         }
 
+        // POST: api/weather/get-weather - Alternative endpoint for POST requests
+        [HttpPost("get-weather")]
+        [Authorize]
+        public async Task<IActionResult> GetWeatherByPost([FromBody] WeatherRequestDto request)
+        {
+            // Validate request
+            var validator = new WeatherRequestValidator();
+            var validationResult = validator.Validate(request);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new WeatherResponseDto
+                {
+                    Success = false,
+                    Message = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage))
+                });
+            }
+
+            // Get weather data
+            var result = await _weatherService.GetWeatherAsync(request);
+
+            if (!result.Success)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+
         // GET: api/weather/test - Unprotected endpoint for testing
         [HttpGet("test")]
         [AllowAnonymous]
